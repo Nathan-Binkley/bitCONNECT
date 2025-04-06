@@ -1,15 +1,7 @@
 import React, { useState } from 'react';
-import {
-    Container,
-    Typography,
-    TextField,
-    Button,
-    Box,
-    Paper,
-    Alert
-} from '@mui/material';
 import axios from 'axios';
 import Results from './components/Results';
+import HealthCheck from './components/HealthCheck';
 
 interface Finding {
     type: string;
@@ -19,6 +11,9 @@ interface Finding {
     confidence: number;
 }
 
+// Get API URL from environment variable
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+
 function App() {
     const [text, setText] = useState('');
     const [file, setFile] = useState<File | null>(null);
@@ -27,7 +22,7 @@ function App() {
 
     const handleTextSubmit = async () => {
         try {
-            const response = await axios.post('http://localhost:8000/scan/text',
+            const response = await axios.post(`${API_URL}/scan/text`,
                 new URLSearchParams({ text }),
                 { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
             );
@@ -45,7 +40,7 @@ function App() {
         formData.append('file', file);
 
         try {
-            const response = await axios.post('http://localhost:8000/scan/file', formData);
+            const response = await axios.post(`${API_URL}/scan/file`, formData);
             setFindings(response.data.findings);
             setError(null);
         } catch (err) {
@@ -54,80 +49,77 @@ function App() {
     };
 
     return (
-        <Container maxWidth="md">
-            <Box sx={{ my: 4 }}>
-                <Typography variant="h3" component="h1" gutterBottom align="center">
+        <div className="min-h-screen bg-gray-50 py-8">
+            <div className="max-w-4xl mx-auto px-4">
+                <h1 className="text-3xl font-bold text-center text-gray-900 mb-8">
                     BitCONNECT Secret Scanner
-                </Typography>
+                </h1>
 
-                <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
-                    <Typography variant="h5" gutterBottom>
+                <HealthCheck apiUrl={API_URL} />
+
+                <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h2 className="text-xl font-semibold text-gray-800 mb-4">
                         Scan Text
-                    </Typography>
-                    <TextField
-                        fullWidth
-                        multiline
+                    </h2>
+                    <textarea
+                        className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         rows={4}
-                        variant="outlined"
                         value={text}
                         onChange={(e) => setText(e.target.value)}
                         placeholder="Enter text to scan for secrets..."
-                        sx={{ mb: 2 }}
                     />
-                    <Button
-                        variant="contained"
-                        color="primary"
+                    <button
+                        className="btn btn-primary mt-4"
                         onClick={handleTextSubmit}
                         disabled={!text}
                     >
                         Scan Text
-                    </Button>
-                </Paper>
+                    </button>
+                </div>
 
-                <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
-                    <Typography variant="h5" gutterBottom>
+                <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h2 className="text-xl font-semibold text-gray-800 mb-4">
                         Scan File
-                    </Typography>
+                    </h2>
                     <input
                         type="file"
                         onChange={(e) => setFile(e.target.files?.[0] || null)}
-                        style={{ marginBottom: '16px' }}
+                        className="mb-4"
                     />
-                    <Button
-                        variant="contained"
-                        color="primary"
+                    <button
+                        className="btn btn-primary"
                         onClick={handleFileSubmit}
                         disabled={!file}
                     >
                         Scan File
-                    </Button>
-                </Paper>
+                    </button>
+                </div>
 
                 {error && (
-                    <Alert severity="error" sx={{ mb: 2 }}>
+                    <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-md mb-4">
                         {error}
-                    </Alert>
+                    </div>
                 )}
 
                 {findings.length === 0 && text && (
-                    <Alert severity="info" sx={{ mb: 2 }}>
+                    <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-md mb-4">
                         Nothing was found in the text
-                    </Alert>
+                    </div>
                 )}
 
                 {findings.length === 0 && file && (
-                    <Alert severity="info" sx={{ mb: 2 }}>
+                    <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-md mb-4">
                         Nothing was found in the file
-                    </Alert>
+                    </div>
                 )}
 
                 {findings.length > 0 && (
-                    <Paper elevation={3} sx={{ p: 3 }}>
+                    <div className="bg-white rounded-lg shadow-md p-6">
                         <Results findings={findings} />
-                    </Paper>
+                    </div>
                 )}
-            </Box>
-        </Container>
+            </div>
+        </div>
     );
 }
 
