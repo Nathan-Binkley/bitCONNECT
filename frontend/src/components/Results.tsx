@@ -34,8 +34,7 @@ const Results: React.FC<ResultsProps> = ({ findings }) => {
                 {findings.map((finding, index) => (
                     <div
                         key={index}
-                        className="border rounded-lg p-4 bg-white shadow-sm"
-                    >
+                        className="border rounded-lg p-4 bg-white shadow-sm">
                         <div className="flex justify-between items-start">
                             <div>
                                 <h3 className="font-semibold text-gray-800">{finding.type}</h3>
