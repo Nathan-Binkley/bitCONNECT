@@ -6,6 +6,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
+# ENV
+ENV API_URL=${API_URL}
 # Install dependencies
 RUN npm ci
 
