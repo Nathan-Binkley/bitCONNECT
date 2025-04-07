@@ -12,7 +12,7 @@ interface Finding {
 }
 
 // Get API URL from environment variable
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API_URL = process.env.REACT_APP_API_URL || 'https://bitconnect.onrender.com';
 
 function App() {
     const [text, setText] = useState('');
