@@ -138,7 +138,7 @@ BitCONNECT is a powerful secret detection tool that helps identify sensitive inf
 2. **Frontend Service**
    - Set environment variables:
      ```
-     REACT_APP_API_URL=https://your-backend-service.onrender.com
+     API_URL=https://your-backend-service.onrender.com
      ```
 
 ## Contributing

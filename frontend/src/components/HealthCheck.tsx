@@ -10,6 +10,7 @@ const HealthCheck: React.FC<HealthCheckProps> = ({ apiUrl }) => {
 
     useEffect(() => {
         const checkHealth = async () => {
+            console.log('Checking health of backend service');
             try {
                 const response = await fetch(`${apiUrl}/health`);
                 if (response.ok) {
