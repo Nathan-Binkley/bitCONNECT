@@ -70,8 +70,8 @@ def detect_secrets(text: str) -> list:
                 if re.match(rule_pattern, value):
                     confidence += confidence_adjustment
             
-            # Ensure confidence stays within 0-1 range
-            confidence = max(0.0, min(1.0, confidence))
+            # Ensure confidence stays within 0-0.99 range
+            confidence = max(0.0, min(0.99, confidence))
             
             findings.append({
                 "type": secret_type,

@@ -19,9 +19,11 @@ function App() {
     const [file, setFile] = useState<File | null>(null);
     const [findings, setFindings] = useState<Finding[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleTextSubmit = async () => {
         try {
+            setIsLoading(true);
             const response = await axios.post(`${API_URL}/scan/text`,
                 new URLSearchParams({ text }),
                 { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
@@ -30,21 +32,34 @@ function App() {
             setError(null);
         } catch (err) {
             setError('Error scanning text. Please try again.');
+        } finally {
+            setIsLoading(false);
         }
     };
 
-    const handleFileSubmit = async () => {
-        if (!file) return;
+    const handleFileSubmit = async (selectedFile: File) => {
+        if (!selectedFile) return;
 
         const formData = new FormData();
-        formData.append('file', file);
+        formData.append('file', selectedFile);
 
         try {
+            setIsLoading(true);
             const response = await axios.post(`${API_URL}/scan/file`, formData);
             setFindings(response.data.findings);
             setError(null);
         } catch (err) {
             setError('Error scanning file. Please try again.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedFile = e.target.files?.[0] || null;
+        setFile(selectedFile);
+        if (selectedFile) {
+            handleFileSubmit(selectedFile);
         }
     };
 
@@ -71,9 +86,9 @@ function App() {
                     <button
                         className="btn btn-primary mt-4"
                         onClick={handleTextSubmit}
-                        disabled={!text}
+                        disabled={!text || isLoading}
                     >
-                        Scan Text
+                        {isLoading ? 'Scanning...' : 'Scan Text'}
                     </button>
                 </div>
 
@@ -83,16 +98,13 @@ function App() {
                     </h2>
                     <input
                         type="file"
-                        onChange={(e) => setFile(e.target.files?.[0] || null)}
+                        onChange={handleFileChange}
                         className="mb-4"
+                        disabled={isLoading}
                     />
-                    <button
-                        className="btn btn-primary"
-                        onClick={handleFileSubmit}
-                        disabled={!file}
-                    >
-                        Scan File
-                    </button>
+                    {isLoading && (
+                        <div className="text-primary-600">Scanning file...</div>
+                    )}
                 </div>
 
                 {error && (
@@ -101,13 +113,13 @@ function App() {
                     </div>
                 )}
 
-                {findings.length === 0 && text && (
+                {findings.length === 0 && text && !isLoading && (
                     <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-md mb-4">
                         Nothing was found in the text
                     </div>
                 )}
 
-                {findings.length === 0 && file && (
+                {findings.length === 0 && file && !isLoading && (
                     <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-md mb-4">
                         Nothing was found in the file
                     </div>
