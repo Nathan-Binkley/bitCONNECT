@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # ENV
-ENV BACKEND_API_URL=https://bitconnect.onrender.com
+ENV REACT_APP_API_URL $API_URL
 
 # Install dependencies
 RUN npm ci
