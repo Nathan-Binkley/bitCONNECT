@@ -12,7 +12,7 @@ interface Finding {
 }
 
 // Get API URL from environment variable
-const API_URL = process.env.API_URL || 'http://localhost:8000';
+const API_URL = process.env.BACKEND_API_URL || 'http://localhost:8000';
 
 function App() {
     const [text, setText] = useState('');
